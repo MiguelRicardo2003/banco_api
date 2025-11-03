@@ -17,8 +17,17 @@ export const sequelize = new Sequelize(
 export const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log("✅ Conectado a la base de datos PostgreSQL");
+    console.log("Conectado a la base de datos PostgreSQL");
   } catch (error) {
-    console.error("❌ Error de conexión:", error);
+    console.error("Error de conexión:", error);
+  }
+};
+
+export const testConnection = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("✓ Conexión a la base de datos exitosa");
+  } catch (error) {
+    console.error("✗ Error de conexión a la base de datos:", error.message);
   }
 };

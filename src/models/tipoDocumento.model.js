@@ -1,11 +1,11 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/database.js';
 
 const TipoDocumento = sequelize.define('TipoDocumento', {
   IdTipoDocumento: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     primaryKey: true,
-    autoIncrement: true,
+    defaultValue: DataTypes.UUIDV4,
     field: 'idtipodocumento'
   },
   TipoDocumento: {

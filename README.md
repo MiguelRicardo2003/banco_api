@@ -1,9 +1,9 @@
-🏦 Banco API — Backend
+Banco API — Backend
 
 Backend desarrollado con Node.js, Express, PostgreSQL y Sequelize.
 Proporciona una API RESTful para la gestión de cuentahabientes, cuentas, movimientos, préstamos, sucursales y más.
 
-🧠 Descripción general
+Descripción general
 
 Este backend implementa la lógica de negocio del dominio bancario, permitiendo:
 
@@ -19,7 +19,7 @@ Administración de préstamos asociados a cuentas.
 
 El objetivo es ofrecer una arquitectura modular, escalable y mantenible, que pueda integrarse fácilmente con un frontend React o cualquier otro cliente REST.
 
-🛠️ Tecnologías principales
+Tecnologías principales
 Tecnología	Descripción
 Node.js	Entorno de ejecución JavaScript
 Express.js	Framework para crear APIs REST
@@ -27,43 +27,43 @@ PostgreSQL	Base de datos relacional
 Sequelize	ORM para PostgreSQL
 dotenv	Manejo de variables de entorno
 nodemon	Recarga automática en desarrollo
-🧩 Modelo entidad–relación (MER)
+Modelo entidad–relación (MER)
 
 Entidades principales:
 
-🧍 Cuentahabiente
+Cuentahabiente
 
-📄 TipoDocumento
+TipoDocumento
 
-💳 Cuenta
+Cuenta
 
-🏷️ TipoCuenta
+TipoCuenta
 
-🤝 Titular
+Titular
 
-💰 Movimiento
+Movimiento
 
-🔁 TipoMovimiento
+TipoMovimiento
 
-🏢 Sucursal
+Sucursal
 
-🏬 TipoSucursal
+TipoSucursal
 
-🌆 Ciudad
+Ciudad
 
-🧾 Préstamo
+Préstamo
 
 Cada entidad se define como un modelo Sequelize con sus respectivas asociaciones y llaves foráneas, basadas en las relaciones del modelo entidad-relación bancario.
 
 ⚙️ Instalación y configuración
-1️⃣ Clonar el repositorio
+1️ Clonar el repositorio
 git clone https://github.com/tu-usuario/banco-backend.git
 cd banco-backend
 
-2️⃣ Instalar dependencias
+2️ Instalar dependencias
 npm install
 
-3️⃣ Crear archivo de entorno
+3️ Crear archivo de entorno
 
 Crea un archivo .env en la raíz del proyecto:
 
@@ -72,9 +72,8 @@ DB_NAME=db_bbva
 DB_USER=postgres
 DB_PASSWORD=tu_clave
 DB_HOST=localhost
-JWT_SECRET=mi_clave_secreta
 
-📁 Estructura del proyecto
+Estructura del proyecto
 banco_api/
 │
 ├── src/
@@ -86,7 +85,6 @@ banco_api/
 │   ├── controllers/        # Lógica de control (manejo de requests)
 │   ├── services/           # Reglas de negocio
 │   ├── routes/             # Definición de rutas API REST
-│   ├── middlewares/        # Middlewares personalizados
 │   └── utils/              # Funciones auxiliares
 │
 ├── .env                    # Variables de entorno
@@ -94,14 +92,15 @@ banco_api/
 ├── package.json
 └── README.md
 
-🚀 Ejecución del servidor
-🔧 Modo desarrollo
+Ejecución del servidor
+Modo desarrollo
 npm run dev
 
-🏗️ Modo producción
+Modo producción
 npm start
 
 
 El servidor se ejecuta por defecto en:
 
 http://localhost:5000
+

@@ -67,20 +67,69 @@ export const createMovimiento = async (req, res) => {
     // Calcular nuevo saldo basado en el tipo de movimiento
     let nuevoSaldo = parseFloat(cuenta.Saldo);
     const valorMovimiento = parseFloat(Valor);
+    const limiteSobregiro = parseFloat(cuenta.Sobregiro) || 0;
     const tipoMovimientoNombre = tipoMov.TipoMovimiento?.toLowerCase() || '';
+    
+    // Umbral para considerar un movimiento como "grande" (ej: $1,000,000)
+    const UMBRAL_GRAN_MOVIMIENTO = 1000000;
+    
+    // Variables para controlar flags
+    let hayGranMovimiento = false;
+    let haySobregiroNoAutorizado = false;
     
     if (tipoMovimientoNombre.includes('depósito') || tipoMovimientoNombre.includes('deposito')) {
       // Depósito
       nuevoSaldo += valorMovimiento;
+      
+      // Si después del depósito el saldo vuelve a ser positivo o cero, 
+      // se puede considerar que el sobregiro se cubrió
+      // (El flag SobregiroNoAutorizado se mantiene como registro histórico)
     } else if (tipoMovimientoNombre.includes('retiro')) {
       // Retiro
       nuevoSaldo -= valorMovimiento;
       
       // Validar saldo suficiente
-      if (nuevoSaldo < 0 && Math.abs(nuevoSaldo) > parseFloat(cuenta.Sobregiro)) {
-        await t.rollback();
-        return res.status(400).json({ error: 'Saldo insuficiente' });
+      if (nuevoSaldo < 0) {
+        const sobregiroActual = Math.abs(nuevoSaldo);
+        
+        // Si el sobregiro excede el límite permitido, rechazar el movimiento
+        if (sobregiroActual > limiteSobregiro) {
+          await t.rollback();
+          return res.status(400).json({ 
+            error: `Saldo insuficiente. Límite de sobregiro permitido: $${limiteSobregiro.toLocaleString('es-CO')}` 
+          });
+        }
+        
+        // Si hay sobregiro pero está dentro del límite permitido, 
+        // marcar como sobregiro no autorizado (indica que hay sobregiro activo)
+        haySobregiroNoAutorizado = true;
       }
+    } else if (tipoMovimientoNombre.includes('transferencia')) {
+      // Transferencia: puede ser salida (retiro) o entrada (depósito)
+      // Por defecto, asumimos que es una salida (retiro) a menos que se especifique
+      // Por ahora, tratamos las transferencias como retiros
+      nuevoSaldo -= valorMovimiento;
+      
+      // Validar saldo suficiente
+      if (nuevoSaldo < 0) {
+        const sobregiroActual = Math.abs(nuevoSaldo);
+        
+        // Si el sobregiro excede el límite permitido, rechazar el movimiento
+        if (sobregiroActual > limiteSobregiro) {
+          await t.rollback();
+          return res.status(400).json({ 
+            error: `Saldo insuficiente. Límite de sobregiro permitido: $${limiteSobregiro.toLocaleString('es-CO')}` 
+          });
+        }
+        
+        // Si hay sobregiro pero está dentro del límite permitido
+        haySobregiroNoAutorizado = true;
+      }
+    }
+    
+    // Detectar si es un gran movimiento (valor absoluto del movimiento >= umbral)
+    if (valorMovimiento >= UMBRAL_GRAN_MOVIMIENTO) {
+      hayGranMovimiento = true;
     }
     
     // Crear el movimiento
@@ -93,8 +142,25 @@ export const createMovimiento = async (req, res) => {
       Descripcion
     }, { transaction: t });
     
-    // Actualizar saldo de la cuenta
-    await cuenta.update({ Saldo: nuevoSaldo }, { transaction: t });
+    // Preparar datos para actualizar la cuenta
+    const datosActualizar = {
+      Saldo: nuevoSaldo
+    };
+    
+    // Actualizar GranMovimiento: si hay un gran movimiento, marcarlo como true
+    // Una vez marcado como true, permanece así (no se revierte)
+    if (hayGranMovimiento) {
+      datosActualizar.GranMovimiento = true;
+    }
+    
+    // Actualizar SobregiroNoAutorizado: si hay sobregiro, marcarlo como true
+    // Una vez marcado como true, permanece así hasta que se corrija manualmente
+    if (haySobregiroNoAutorizado) {
+      datosActualizar.SobregiroNoAutorizado = true;
+    }
+    
+    // Actualizar saldo y flags de la cuenta
+    await cuenta.update(datosActualizar, { transaction: t });
     
     await t.commit();
     
@@ -110,7 +176,12 @@ export const createMovimiento = async (req, res) => {
     res.status(201).json(movimientoCompleto);
   } catch (error) {
     await t.rollback();
-    res.status(400).json({ error: error.message });
+    console.error('Error al crear movimiento:', error);
+    console.error('Stack trace:', error.stack);
+    res.status(400).json({ 
+      error: error.message || 'Error al crear el movimiento',
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
 

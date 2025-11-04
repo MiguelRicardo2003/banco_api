@@ -26,6 +26,10 @@ export const validateCreateCuenta = (data) => {
     errors.push('La sucursal es obligatoria');
   }
   
+  if (!data.IdCuentahabiente) {
+    errors.push('El cuentahabiente titular es obligatorio');
+  }
+  
   if (data.Saldo !== undefined && parseFloat(data.Saldo) < 0) {
     errors.push('El saldo no puede ser negativo');
   }

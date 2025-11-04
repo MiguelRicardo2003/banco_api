@@ -58,12 +58,16 @@ export const validateUpdateCuentahabiente = (data) => {
     errors.push('El nombre no puede exceder 80 caracteres');
   }
   
-  if (data.Clave !== undefined && data.Clave.length < 4) {
-    errors.push('La clave debe tener al menos 4 caracteres');
-  }
-  
-  if (data.Clave && data.Clave.length > 100) {
-    errors.push('La clave no puede exceder 100 caracteres');
+  // Solo validar la clave si se está proporcionando (no vacía)
+  // Si está vacía o undefined, significa que no se quiere cambiar
+  if (data.Clave !== undefined && data.Clave !== null && data.Clave !== '') {
+    if (data.Clave.length < 4) {
+      errors.push('La clave debe tener al menos 4 caracteres');
+    }
+    
+    if (data.Clave.length > 100) {
+      errors.push('La clave no puede exceder 100 caracteres');
+    }
   }
   
   if (data.Telefono && data.Telefono.length > 20) {

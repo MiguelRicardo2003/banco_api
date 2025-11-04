@@ -17,11 +17,6 @@ export const validateCreateMovimiento = (data) => {
     errors.push('El tipo de movimiento es obligatorio');
   }
   
-  // Validar que el tipo de movimiento sea 1, 2 o 3
-  if (data.IdTipoMovimiento && ![1, 2, 3].includes(parseInt(data.IdTipoMovimiento))) {
-    errors.push('El tipo de movimiento debe ser 1 (Depósito), 2 (Retiro) o 3 (Transferencia)');
-  }
-  
   if (!data.IdSucursal) {
     errors.push('La sucursal es obligatoria');
   }

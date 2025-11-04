@@ -4,14 +4,57 @@ import { validateCreateSucursal, validateUpdateSucursal } from '../validators/su
 // Obtener todas las sucursales
 export const getAllSucursales = async (req, res) => {
   try {
-    const sucursales = await Sucursal.findAll({
-      include: [
-        { model: Ciudad, as: 'ciudad' },
-        { model: TipoSucursal, as: 'tipoSucursal' }
-      ]
+    // Primero intentar sin relaciones para verificar si hay datos
+    const sucursalesSinRelaciones = await Sucursal.findAll({
+      order: [['Sucursal', 'ASC']]
     });
-    res.json(sucursales);
+    console.log(`Sucursales sin relaciones: ${sucursalesSinRelaciones.length}`);
+    
+    // Si hay datos, intentar con relaciones
+    let sucursales;
+    if (sucursalesSinRelaciones.length > 0) {
+      try {
+        sucursales = await Sucursal.findAll({
+          include: [
+            { model: Ciudad, as: 'ciudad', required: false },
+            { model: TipoSucursal, as: 'tipoSucursal', required: false }
+          ],
+          order: [['Sucursal', 'ASC']]
+        });
+        console.log(`Sucursales con relaciones: ${sucursales.length}`);
+      } catch (relError) {
+        console.error('Error al cargar con relaciones, usando sin relaciones:', relError);
+        // Si falla con relaciones, usar sin relaciones
+        sucursales = sucursalesSinRelaciones;
+      }
+    } else {
+      sucursales = sucursalesSinRelaciones;
+    }
+    
+    // Convertir a JSON plano para asegurar compatibilidad
+    const sucursalesData = sucursales.map(sucursal => sucursal.toJSON());
+    
+    console.log(`Sucursales encontradas: ${sucursalesData.length}`);
+    if (sucursalesData.length > 0) {
+      console.log('Ejemplo de sucursal JSON:', JSON.stringify(sucursalesData[0], null, 2));
+      console.log('Primera sucursal:', {
+        Sucursal: sucursalesData[0].Sucursal,
+        IdSucursal: sucursalesData[0].IdSucursal,
+        IdCiudad: sucursalesData[0].IdCiudad,
+        IdTipoSucursal: sucursalesData[0].IdTipoSucursal,
+        tieneTipoSucursal: !!sucursalesData[0].tipoSucursal,
+        tipoSucursal: sucursalesData[0].tipoSucursal,
+        tieneCiudad: !!sucursalesData[0].ciudad,
+        ciudad: sucursalesData[0].ciudad
+      });
+    } else {
+      console.warn('⚠️ No se encontraron sucursales en la base de datos');
+      console.log('Verifica que la tabla "sucursal" tenga datos insertados');
+    }
+    res.json(sucursalesData);
   } catch (error) {
+    console.error('Error al obtener sucursales:', error);
+    console.error('Stack trace:', error.stack);
     res.status(500).json({ error: error.message });
   }
 };

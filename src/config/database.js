@@ -26,8 +26,8 @@ export const connectDB = async () => {
 export const testConnection = async () => {
   try {
     await sequelize.authenticate();
-    console.log("✓ Conexión a la base de datos exitosa");
+    console.log("Conexión a la base de datos exitosa");
   } catch (error) {
-    console.error("✗ Error de conexión a la base de datos:", error.message);
+    console.error("Error de conexión a la base de datos:", error.message);
   }
 };

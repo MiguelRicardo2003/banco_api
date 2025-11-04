@@ -2,7 +2,8 @@ import {
   Cuenta,
   TipoCuenta,
   Sucursal,
-  Cuentahabiente
+  Cuentahabiente,
+  Titular
 } from "../models/index.js";
 import {
   validateCreateCuenta,
@@ -56,7 +57,7 @@ export const createCuenta = async (req, res) => {
       return res.status(400).json({ errors: validation.errors });
     }
 
-    const { Numero } = req.body;
+    const { Numero, IdCuentahabiente } = req.body;
 
     //Validar que el numero de cuenta no este duplicado
     const existente = await Cuenta.findOne({
@@ -70,9 +71,40 @@ export const createCuenta = async (req, res) => {
         .json({ error: "Ya existe una cuenta con este número" });
     }
 
-    const nuevaCuenta = await Cuenta.create(req.body);
-    res.status(201).json(nuevaCuenta);
+    // Validar que el cuentahabiente existe si se proporciona
+    if (IdCuentahabiente) {
+      const cuentahabiente = await Cuentahabiente.findByPk(IdCuentahabiente);
+      if (!cuentahabiente) {
+        return res.status(400).json({ error: "El cuentahabiente no existe" });
+      }
+    }
+
+    // Crear la cuenta sin el IdCuentahabiente (no es parte de la tabla cuenta)
+    const datosCuenta = { ...req.body };
+    delete datosCuenta.IdCuentahabiente;
+
+    const nuevaCuenta = await Cuenta.create(datosCuenta);
+
+    // Si se proporcionó un cuentahabiente, crear la relación titular
+    if (IdCuentahabiente) {
+      await Titular.create({
+        IdCuenta: nuevaCuenta.IdCuenta,
+        IdCuentahabiente: IdCuentahabiente
+      });
+    }
+
+    // Obtener la cuenta con sus relaciones para devolverla
+    const cuentaCompleta = await Cuenta.findByPk(nuevaCuenta.IdCuenta, {
+      include: [
+        { model: TipoCuenta, as: "tipoCuenta" },
+        { model: Sucursal, as: "sucursal" },
+        { model: Cuentahabiente, as: "titulares" }
+      ]
+    });
+
+    res.status(201).json(cuentaCompleta);
   } catch (error) {
+    console.error('Error al crear cuenta:', error);
     res.status(400).json({ error: error.message });
   }
 };

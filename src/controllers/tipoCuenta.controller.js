@@ -5,8 +5,11 @@ export const getAllTipoCuentas = async (req, res) => {
     const tipos = await TipoCuenta.findAll({
       order: [['TipoCuenta', 'ASC']]
     });
-    res.json(tipos);
+    // Convertir a JSON plano para asegurar compatibilidad
+    const tiposData = tipos.map(tipo => tipo.toJSON());
+    res.json(tiposData);
   } catch (error) {
+    console.error('Error al obtener tipos de cuenta:', error);
     res.status(500).json({ error: error.message });
   }
 };

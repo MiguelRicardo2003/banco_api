@@ -17,6 +17,7 @@ import tipoDocumentoRoutes from './routers/tipoDocumento.route.js';
 import tipoCuentaRoutes from './routers/tipoCuenta.route.js';
 import tipoSucursalRoutes from './routers/tipoSucursal.route.js';
 import tipoMovimientoRoutes from './routers/tipoMovimiento.route.js';
+import titularRoutes from './routers/titular.route.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,7 +42,8 @@ app.get('/', (req, res) => {
       tipoDocumentos: '/api/tipo-documentos',
       tipoCuentas: '/api/tipo-cuentas',
       tipoSucursales: '/api/tipo-sucursales',
-      tipoMovimientos: '/api/tipo-movimientos'
+      tipoMovimientos: '/api/tipo-movimientos',
+      titulares: '/api/titulares'
     }
   });
 });
@@ -57,6 +59,7 @@ app.use('/api/tipo-documentos', tipoDocumentoRoutes);
 app.use('/api/tipo-cuentas', tipoCuentaRoutes);
 app.use('/api/tipo-sucursales', tipoSucursalRoutes);
 app.use('/api/tipo-movimientos', tipoMovimientoRoutes);
+app.use('/api/titulares', titularRoutes);
 
 // RUTA 404
 app.use((req, res) => {

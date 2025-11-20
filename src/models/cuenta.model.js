@@ -1,11 +1,11 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/database.js';
 
 const Cuenta = sequelize.define('Cuenta', {
   IdCuenta: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     primaryKey: true,
-    autoIncrement: true,
+    defaultValue: DataTypes.UUIDV4,
     field: 'idcuenta'
   },
   Numero: {
@@ -19,12 +19,12 @@ const Cuenta = sequelize.define('Cuenta', {
     field: 'fechaapertura'
   },
   IdTipoCuenta: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     field: 'idtipocuenta'
   },
   IdSucursal: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     field: 'idsucursal'
   },

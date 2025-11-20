@@ -1,20 +1,20 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/database.js';
 
 const Movimiento = sequelize.define('Movimiento', {
   IdMovimiento: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     primaryKey: true,
-    autoIncrement: true,
+    defaultValue: DataTypes.UUIDV4,
     field: 'idmovimiento'
   },
   IdCuenta: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     field: 'idcuenta'
   },
   IdSucursal: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     field: 'idsucursal'
   },
@@ -29,7 +29,7 @@ const Movimiento = sequelize.define('Movimiento', {
     field: 'valor'
   },
   IdTipoMovimiento: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     field: 'idtipomovimiento'
   },

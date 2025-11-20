@@ -1,14 +1,15 @@
-import TipoCuenta from "./cuenta.model";
-import TipoDocumento from "./tipoDocumento.model";
-import TipoSucursal from "./tipoSucursal.model";
-import TipoMovimiento from "./tipoMovimiento.model";
-import Ciudad from "./ciudad.model";
-import Cuentahabiente from "./cuentaHabiente.model";
-import Sucursal from "./sucursal.model";
-import Cuenta from "./cuenta.model";
-import Titular from "./titular.model";
-import Movimiento from "./movimiento.model";
-import Prestamo from "./prestamo.model";
+import { sequelize } from "../config/database.js";
+import TipoCuenta from "./tipoCuenta.model.js";
+import TipoDocumento from "./tipoDocumento.model.js";
+import TipoSucursal from "./tipoSucursal.model.js";
+import TipoMovimiento from "./tipoMovimiento.model.js";
+import Ciudad from "./ciudad.model.js";
+import Cuentahabiente from "./cuentaHabiente.model.js";
+import Sucursal from "./sucursal.model.js";
+import Cuenta from "./cuenta.model.js";
+import Titular from "./titular.model.js";
+import Movimiento from "./movimiento.model.js";
+import Prestamo from "./prestamo.model.js";
 
 // Definir las relaciones de las tablas
 
